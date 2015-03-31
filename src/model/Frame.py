@@ -1,17 +1,15 @@
 import string
-from wxPython._wx import false
 # coding=<encoding name>
-from src.PrimitiveFrame import PrimitiveFrame
+from src.model.PrimitiveFrame import PrimitiveFrame
+from src.structure.Dictionary import Dictionary
 
 
 __author__ = 'osvaldo'
 
-
 class Frame:
-    __slots = {}
-    __types = []
 
     def __init__(self, *type):
+        self.__slots = Dictionary()
         self.__types = type
 
     def is_type(self, type):
@@ -20,25 +18,27 @@ class Frame:
     def get_type(self):
         return self.__types
 
-
     def get_slot(self):
-        return self.__slots
+        return self.__slots.keys()
 
     def is_primitive(self):
-        return false
+        return False
 
     # devolver un iterador o con una lista?
     def get_frame(self, slot):
-        return self.__slots[slot]
+        return self.__slots.get(slot)[0]
+
+    def add_slot(self, slot, value):
+        if isinstance(value, Frame):
+            self.__slots.get(slot).append(value)
+        else:
+            self.__slots.get(slot).append(PrimitiveFrame(value))
 
     def add_frame(self, slot, *values):
-        if not self.__slots.__contains__(slot):
-            self.__slots[slot] = []
+        if not self.__slots.constain(slot):
+            self.__slots.set_item(slot, [])
         for value in values:
-            if isinstance(value, Frame):
-                self.__slots[slot].append(value)
-            else:
-                self.__slots[slot].append(PrimitiveFrame(value))
+            self.add_slot(slot, value)
         return self
 
     def value(self):
@@ -58,14 +58,14 @@ class Frame:
     def search_by_type(self, type, deep, **slots):
         for slot in slots.values():
             for frame in slot:
-                if not frame.isPrimitive() and frame.is_type(self, type) is not None:
+                if not frame.isPrimitive() and frame.get_type(self, type) is not None:
                     return frame
                 elif frame.isPrimitive() and deep:
                     found_frame = frame.deepSearchByType(self, type)
                 if None != found_frame: return found_frame
 
     def deep_search_by_type(self, type):
-        return self if self.isType(type)else self.searchByType(self, type, false, self.__slots.values())
+        return self if self.isType(type)else self.searchByType(self, type, False, self.__slots.values())
 
     def search_by_name(self, name, deep, **slots):
         for slot in slots.values():
@@ -81,11 +81,3 @@ class Frame:
 
     def deep_search_by_name(self, name):
         return self if self.getFrame(name)else None
-
-
-
-
-
-
-
-

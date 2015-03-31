@@ -1,14 +1,12 @@
 __author__ = 'osvaldo'
 
 
-class PrimitiveFrame(object):
-    __VALUE = "value"
-
+class PrimitiveFrame:
     def __init__(self, value):
         self.__value = value
 
-    def is_type(self):
-        return type(self.__value)
+    def get_type(self):
+        return type(self.__value).__name__
 
     def is_primitive(self):
         return True
